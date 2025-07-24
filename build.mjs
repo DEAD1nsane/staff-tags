@@ -50,7 +50,7 @@ const outPath = `./dist/index.js`;
 
 try {
     const bundle = await rollup({
-        input: `./${manifest.main}`,
+        input: `./index.ts`,
         onwarn: () => {},
         plugins,
     });
