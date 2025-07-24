@@ -14,7 +14,7 @@ const outPath = "./dist/index.js";
 await bundle.write({
 	file: outPath,
 	format: "iife",
-	name: "plugin", // ✅ this defines `var plugin = { ... }`
+	name: "plugin", // Exposes your plugin object as `plugin`
 	exports: "default",
 	globals(id) {
 		if (id.startsWith("@vendetta"))
@@ -23,24 +23,21 @@ await bundle.write({
 		return null;
 	},
 	compact: true,
-	// ✅ This ensures Vendetta gets the actual plugin object
 	banner: "(() => {",
-	footer: "return plugin; })();"
+	footer: "return plugin; })();" // ✅ This makes Vendetta receive the plugin object
 });
 
-// Read built code
+// ✅ No wrapping here anymore — just read the file directly
 const code = await readFile(outPath, "utf8");
 
-// Read and update manifest
+// Update manifest with SHA256 hash
 const manifestPath = "./manifest.json";
 const manifestRaw = await readFile(manifestPath, "utf8");
 const manifest = JSON.parse(manifestRaw);
 
-// Generate and set hash
 const hash = createHash("sha256").update(code).digest("hex");
 manifest.hash = hash;
 
-// Write updated manifest
 await writeFile(manifestPath, JSON.stringify(manifest, null, 4));
 
 console.log("✅ Build complete. SHA256:", hash);
