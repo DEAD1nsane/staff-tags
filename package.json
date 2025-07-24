@@ -21,7 +21,8 @@
 		},
 		"ignoredBuiltDependencies": [
 			"@swc/core",
-			"esbuild"
+			"esbuild",
+			"node"
 		]
 	},
 	"dependencies": {
