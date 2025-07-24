@@ -3,12 +3,14 @@
     "description": "Shows extra tags for staff members.",
     "authors": [
         {
-            "name": "Fiery",
-            "id": "890228870559698955"
+            "name": "im__turbo__",
+            "id": "288054683161853952"
         }
     ],
-    "main": "src/index.ts",
+    "main": "index.js",
     "vendetta": {
         "icon": "ic_moderation_24px"
-    }
+    },
+    "hash": "98ed315bc5d1ab17c1e8f9d81f4a1ed9f65ad5b40371492f7d7e71ce0e401fdd",
+    "homepage": "https://stafftags.pages.dev"
 }
