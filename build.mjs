@@ -6,7 +6,8 @@ import { rollup } from "rollup";
 import esbuild from "rollup-plugin-esbuild";
 import commonjs from "@rollup/plugin-commonjs";
 import nodeResolve from "@rollup/plugin-node-resolve";
-import swc from "@swc/core";
+import { writeFileSync } from 'fs';
+writeFileSync('dist/_redirects', '/ /index.js 200');import swc from "@swc/core";
 
 const extensions = [".js", ".jsx", ".mjs", ".ts", ".tsx", ".cts", ".mts"];
 
