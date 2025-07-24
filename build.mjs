@@ -46,11 +46,11 @@ const plugins = [
 ];
 
 const manifest = JSON.parse(await readFile(`./manifest.json`));
-const outPath = `./dist/index.js`;
+const outPath = `./dist/index.ts`;
 
 try {
     const bundle = await rollup({
-        input: `./${manifest.main}`,
+        input: 'src/index.ts',
         onwarn: () => {},
         plugins,
     });
@@ -73,11 +73,11 @@ try {
     
     const toHash = await readFile(outPath);
     manifest.hash = createHash("sha256").update(toHash).digest("hex");
-    manifest.main = "index.js";
+    manifest.main = "index.ts";
     await writeFile(`./dist/manifest.json`, JSON.stringify(manifest, null, 4));
     
     // ✅ Now write _redirects
-    writeFileSync("dist/_redirects", "/ /index.js 200\n");
+    writeFileSync("dist/_redirects", "/ /index.ts 200\n");
     
     console.log(`Successfully built ${manifest.name}!`);
 } catch (e) {

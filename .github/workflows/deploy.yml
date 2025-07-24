@@ -30,8 +30,8 @@ jobs:
       - name: 📁 Prepare Cloudflare Pages zip
         run: |
           mkdir cloudflare
-          cp dist/index.js cloudflare/
-          echo '/ index.js 200' > cloudflare/_redirects
+          cp dist/index.ts cloudflare/
+          echo '/ index.ts 200' > cloudflare/_redirects
 
       - name: 📦 Zip build output
         run: |
