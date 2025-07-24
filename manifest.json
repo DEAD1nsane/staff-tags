@@ -8,9 +8,8 @@
         }
     ],
     "main": "src/index.ts",
-"vendetta": {
+  "vendetta": {
     "icon": "ic_moderation_24px"
-    },
-    "hash": "98ed315bc5d1ab17c1e8f9d81f4a1ed9f65ad5b40371492f7d7e71ce0e401fdd",
-    "homepage": "https://stafftags.pages.dev"
+  },
+  "hash": "98ed315bc5d1ab17c1e8f9d81f4a1ed9f65ad5b40371492f7d7e71ce0e401fdd"
 }
