@@ -1,86 +1,34 @@
-import { readFile, writeFile } from "fs/promises";
-import { writeFileSync } from "fs";
-import { extname } from "path";
-import { createHash } from "crypto";
-
 import { rollup } from "rollup";
 import esbuild from "rollup-plugin-esbuild";
-import commonjs from "@rollup/plugin-commonjs";
-import nodeResolve from "@rollup/plugin-node-resolve";
-import swc from "@swc/core";
+import manifest from "./manifest.json" assert { type: "json" };
+import { createHash } from "crypto";
+import fs from "fs";
 
-const extensions = [".js", ".jsx", ".mjs", ".ts", ".tsx", ".cts", ".mts"];
+const bundle = await rollup({
+    input: "./src/index.ts",
+    plugins: [esbuild()],
+    external: ["react", "@vendetta/*"]
+});
 
-const plugins = [
-    nodeResolve(),
-    commonjs(),
-    {
-        name: "swc",
-        async transform(code, id) {
-            const ext = extname(id);
-            if (!extensions.includes(ext)) return null;
-            
-            const ts = ext.includes("ts");
-            const tsx = ts ? ext.endsWith("x") : undefined;
-            const jsx = !ts ? ext.endsWith("x") : undefined;
-            
-            const result = await swc.transform(code, {
-                filename: id,
-                jsc: {
-                    externalHelpers: true,
-                    parser: {
-                        syntax: ts ? "typescript" : "ecmascript",
-                        tsx,
-                        jsx,
-                    },
-                },
-                env: {
-                    targets: "defaults",
-                    include: ["transform-classes", "transform-arrow-functions"],
-                },
-            });
-            return result.code;
-        },
+const outPath = "./dist/index.js";
+
+await bundle.write({
+    file: outPath,
+    format: "iife",
+    exports: "default", // ✅ critical
+    globals(id) {
+        if (id.startsWith("@vendetta"))
+            return id.substring(1).replace(/\//g, ".");
+        if (id === "react") return "window.React";
+        return null;
     },
-    esbuild({ minify: true }),
-];
+    compact: true
+});
 
-const manifest = JSON.parse(await readFile(`./manifest.json`));
-const outPath = `./dist/index.js`;
+const code = fs.readFileSync(outPath, "utf8");
+const hash = createHash("sha256").update(code).digest("hex");
 
-try {
-    const bundle = await rollup({
-        input: `./src/index.ts`,
-        onwarn: () => {},
-        plugins,
-    });
-    
-    await bundle.write({
-        file: outPath,
-        globals(id) {
-            if (id.startsWith("@vendetta"))
-                return id.substring(1).replace(/\//g, ".");
-            const map = {
-                react: "window.React",
-            };
-            return map[id] || null;
-        },
-        format: "iife",
-        compact: true,
-        exports: "named",
-    });
-    await bundle.close();
-    
-    const toHash = await readFile(outPath);
-    manifest.hash = createHash("sha256").update(toHash).digest("hex");
-    manifest.main = "index.js";
-    await writeFile(`./dist/manifest.json`, JSON.stringify(manifest, null, 4));
-    
-    // ✅ Now write _redirects
-    writeFileSync("dist/_redirects", "/ /index.js 200\n");
-    
-    console.log(`Successfully built ${manifest.name}!`);
-} catch (e) {
-    console.error("Failed to build plugin...", e);
-    process.exit(1);
-}
+manifest.hash = hash;
+fs.writeFileSync("./manifest.json", JSON.stringify(manifest, null, 4));
+
+console.log("✅ Build complete. SHA256:", hash);
