@@ -1,0 +1,8 @@
+{
+    "name": "Staff Tags",
+    "description": "Adds a custom badge to staff members.",
+    "main": "index.js",
+    "author": "dead1nsane",
+    "version": "1.0.0",
+    "hash": "f1e9c03a7e71e5a4db524f8f872cc8ae35f4994ae3ab22d1b6dca40aeea7d911"
+}
