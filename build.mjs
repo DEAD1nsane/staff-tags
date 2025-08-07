@@ -8,7 +8,7 @@ import fs from "fs";
 const manifest = JSON.parse(await readFile("./manifest.json", "utf8"));
 
 // Define build output path
-const outPath = "./dist/index.js";
+const outPath = "./docs/index.js";
 
 // Create bundle with ESBuild (TypeScript support)
 const bundle = await rollup({
