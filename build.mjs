@@ -36,3 +36,9 @@ await writeFile("./dist/manifest.json", JSON.stringify(manifest, null, 4));
 fs.writeFileSync("dist/_redirects", "/ /index.js 200\n");
 
 console.log("✅ Build complete with hash:", manifest.hash);
+import { cp } from "fs/promises";
+
+// Copy dist → docs (overwrites existing)
+await cp("./dist", "./docs", { recursive: true });
+
+console.log("📁 Copied dist/ → docs/ for GitHub Pages");
