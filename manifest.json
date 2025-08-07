@@ -1,15 +1,36 @@
-{
-  "name": "Staff Tags",
-  "description": "Shows extra tags for staff members.",
-  "authors": [
-    {
-      "name": "im__turbo__",
-      "id": "288054683161853952"
+const { React } = require("@vendetta/metro/common");
+const { before } = require("@vendetta/patcher");
+const { findByName } = require("@vendetta/metro");
+
+// Find the component that renders user tags
+const UserBadges = findByName("UserBadges", false);
+
+let unpatch;
+
+export default {
+    onLoad: () => {
+        // Patch the UserBadges component to add staff tags
+        unpatch = before("default", UserBadges, (args) => {
+            const [props] = args;
+            const { user } = props;
+            
+            // Add your staff tag logic here
+            // This is just a basic example
+            if (user && isStaffMember(user.id)) {
+                // Add staff badge logic
+            }
+        });
+    },
+    onUnload: () => {
+        unpatch?.();
     }
-  ],
-  "main": "index.js",
-  "vendetta": {
-    "icon": "ic_moderation_24px"
-  },
-  "hash": ""
+};
+
+function isStaffMember(userId) {
+    // Define your staff member IDs here
+    const staffIds = [
+        "288054683161853952", // Your ID
+        // Add more staff IDs
+    ];
+    return staffIds.includes(userId);
 }

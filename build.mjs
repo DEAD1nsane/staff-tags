@@ -14,7 +14,7 @@ const outPath = "./dist/index.js";
 await bundle.write({
 	file: outPath,
 	format: "iife",
-	name: "plugin", // Exposes your plugin object as `plugin`
+	name: "VendettaPlugin", // Changed to a more descriptive name
 	exports: "default",
 	globals(id) {
 		if (id.startsWith("@vendetta"))
@@ -23,12 +23,20 @@ await bundle.write({
 		return null;
 	},
 	compact: true,
-	banner: "(() => {",
-	footer: "return plugin; })();" // ✅ This makes Vendetta receive the plugin object
+	// Remove the custom banner/footer - let Rollup handle the IIFE properly
 });
 
-// ✅ No wrapping here anymore — just read the file directly
-const code = await readFile(outPath, "utf8");
+// Read the generated code
+let code = await readFile(outPath, "utf8");
+
+// Wrap it properly for Vendetta
+code = `(function() {
+${code}
+return VendettaPlugin;
+})();`;
+
+// Write the wrapped code back
+await writeFile(outPath, code);
 
 // Update manifest with SHA256 hash
 const manifestPath = "./manifest.json";
