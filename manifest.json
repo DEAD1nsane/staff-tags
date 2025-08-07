@@ -1,15 +1,8 @@
 {
   "name": "Staff Tags",
-  "description": "Shows extra tags for staff members.",
-  "authors": [
-    {
-      "name": "im__turbo__",
-      "id": "288054683161853952"
-    }
-  ],
+  "description": "Adds a custom badge to staff members.",
   "main": "index.js",
-  "vendetta": {
-    "icon": "ic_moderation_24px"
-  },
+  "author": "dead1nsane",
+  "version": "1.0.0",
   "hash": ""
 }
