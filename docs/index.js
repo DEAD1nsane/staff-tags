@@ -1,3 +1,5 @@
+exports.onLoad = onLoad;
+exports.onUnload = onUnload;
 (() => {
 	const { React } = require("@vendetta/metro/common");
 	const { before } = require("@vendetta/patcher");
