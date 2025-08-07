@@ -1,8 +1,8 @@
 {
   "name": "Staff Tags",
-  "description": "Adds a custom badge to staff members.",
-  "main": "index.js",
-  "author": "dead1nsane",
-  "version": "1.0.0",
-  "hash": ""
+  "description": "Adds custom staff tags across the app",
+  "authors": ["yourname or yourID"],
+  "hash": "SOME_SHA256_HASH",
+  "source": "https://github.com/DEAD1nsane/staff-tags",
+  "main": "index.js"
 }

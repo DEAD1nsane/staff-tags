@@ -1,23 +1,26 @@
-import { after, unpatchAll } from "@vendetta/patcher";
-
-// Patch modules
-import patchChat from "./patches/chat";
-import patchDetails from "./patches/details";
-import patchName from "./patches/name";
+import { settings } from "@vendetta/plugkit";
+import { registerSettingsPage } from "@vendetta/ui";
 import patchSidebar from "./patches/sidebar";
+import patchChat from "./patches/chat";
+import patchTags from "./patches/tags";
+import patchName from "./patches/name";
+import patchDetails from "./patches/details";
+import Settings from "./ui/pages/Settings";
 
-let unpatchers: Array < () => void > = [];
+const patches = [];
 
 export const onLoad = () => {
-    unpatchers.push(patchChat());
-    unpatchers.push(patchDetails());
-    unpatchers.push(patchName());
-    unpatchers.push(patchSidebar());
-    console.log("✅ Staff Tags with all patches loaded");
+    patches.push(
+        patchSidebar(),
+        patchChat(),
+        patchTags(),
+        patchName(),
+        patchDetails()
+    );
+    
+    registerSettingsPage(Settings);
 };
 
 export const onUnload = () => {
-    unpatchers.forEach((u) => u && u());
-    unpatchAll();
-    console.log("🛑 Staff Tags patches unloaded");
+    for (const unpatch of patches) unpatch?.();
 };
