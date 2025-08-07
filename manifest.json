@@ -7,30 +7,30 @@ const UserBadges = findByName("UserBadges", false);
 
 let unpatch;
 
-export default {
-    onLoad: () => {
-        // Patch the UserBadges component to add staff tags
-        unpatch = before("default", UserBadges, (args) => {
-            const [props] = args;
-            const { user } = props;
-            
-            // Add your staff tag logic here
-            // This is just a basic example
-            if (user && isStaffMember(user.id)) {
-                // Add staff badge logic
-            }
-        });
-    },
-    onUnload: () => {
-        unpatch?.();
-    }
-};
-
 function isStaffMember(userId) {
-    // Define your staff member IDs here
-    const staffIds = [
-        "288054683161853952", // Your ID
-        // Add more staff IDs
-    ];
-    return staffIds.includes(userId);
+  // Define your staff member IDs here
+  const staffIds = [
+    "288054683161853952", // Your ID
+    // Add more staff IDs
+  ];
+  return staffIds.includes(userId);
 }
+
+module.exports = {
+  onLoad: () => {
+    // Patch the UserBadges component to add staff tags
+    unpatch = before("default", UserBadges, (args) => {
+      const [props] = args;
+      const { user } = props;
+      
+      // Add your staff tag logic here
+      // This is just a basic example
+      if (user && isStaffMember(user.id)) {
+        // Add staff badge logic
+      }
+    });
+  },
+  onUnload: () => {
+    unpatch?.();
+  }
+};
