@@ -2,50 +2,37 @@ import { rollup } from "rollup";
 import esbuild from "rollup-plugin-esbuild";
 import { createHash } from "crypto";
 import { readFile, writeFile } from "fs/promises";
+import fs from "fs";
 
-const bundle = await rollup({
-	input: "./src/index.ts",
-	plugins: [esbuild()],
-	external: ["react", "@vendetta/*"]
-});
+// Load and parse manifest.json
+const manifest = JSON.parse(await readFile("./manifest.json", "utf8"));
 
+// Define build output path
 const outPath = "./dist/index.js";
 
-await bundle.write({
-	file: outPath,
-	format: "iife",
-	name: "VendettaPlugin", // Changed to a more descriptive name
-	exports: "default",
-	globals(id) {
-		if (id.startsWith("@vendetta"))
-			return id.substring(1).replace(/\//g, ".");
-		if (id === "react") return "window.React";
-		return null;
-	},
-	compact: true,
-	// Remove the custom banner/footer - let Rollup handle the IIFE properly
+// Create bundle with ESBuild (TypeScript support)
+const bundle = await rollup({
+    input: "./src/index.ts",
+    plugins: [esbuild()],
+    external: ["react", "@vendetta/*"]
 });
 
-// Read the generated code
-let code = await readFile(outPath, "utf8");
+// Write bundle in CommonJS format (Vendetta expects this)
+await bundle.write({
+    file: outPath,
+    format: "cjs", // ✅ Use CommonJS format
+    exports: "named",
+    compact: true
+});
 
-// Wrap it properly for Vendetta
-code = `(function() {
-${code}
-return VendettaPlugin;
-})();`;
+// Generate SHA-256 hash of built file
+const code = await readFile(outPath, "utf8");
+manifest.hash = createHash("sha256").update(code).digest("hex");
 
-// Write the wrapped code back
-await writeFile(outPath, code);
+// Write updated manifest.json to /dist
+await writeFile("./dist/manifest.json", JSON.stringify(manifest, null, 4));
 
-// Update manifest with SHA256 hash
-const manifestPath = "./manifest.json";
-const manifestRaw = await readFile(manifestPath, "utf8");
-const manifest = JSON.parse(manifestRaw);
+// Optional: for Netlify-style redirects if you're deploying there
+fs.writeFileSync("dist/_redirects", "/ /index.js 200\n");
 
-const hash = createHash("sha256").update(code).digest("hex");
-manifest.hash = hash;
-
-await writeFile(manifestPath, JSON.stringify(manifest, null, 4));
-
-console.log("✅ Build complete. SHA256:", hash);
+console.log("✅ Build complete with hash:", manifest.hash);

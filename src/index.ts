@@ -1,37 +1,28 @@
-import { rollup } from "rollup";
-import esbuild from "rollup-plugin-esbuild";
-import { createHash } from "crypto";
-import { readFile, writeFile } from "fs/promises";
-import fs from "fs";
+import { before } from "@vendetta/patcher";
+import { findByName } from "@vendetta/metro";
+import { React } from "@vendetta/metro/common";
 
-const manifest = JSON.parse(await readFile("./manifest.json", "utf8"));
-const outPath = "./dist/index.js";
+const UserBadges = findByName("UserBadges", false);
+let unpatch: () => void;
 
-const bundle = await rollup({
-    input: "./src/index.ts",
-    plugins: [esbuild()],
-    external: ["react", "@vendetta/*"]
-});
+function isStaff(userId: string): boolean {
+    return [
+        "288054683161853952" // Add more IDs if needed
+    ].includes(userId);
+}
 
-await bundle.write({
-    file: outPath,
-    format: "iife",
-    name: "plugin", // 👈 this ensures a global is created
-    exports: "default",
-    globals(id) {
-        if (id.startsWith("@vendetta")) return id.substring(1).replace(/\//g, ".");
-        if (id === "react") return "window.React";
-        return null;
-    },
-    compact: true,
-    banner: "(() => {",
-    footer: "})();"
-});
+export const onLoad = () => {
+    console.log("✅ Staff Tags loaded");
+    unpatch = before("default", UserBadges, ([props]) => {
+        const { user } = props;
+        if (user && isStaff(user.id)) {
+            console.log("👨‍💼 Staff member detected:", user.id);
+            // Here you could inject a badge or tag component
+        }
+    });
+};
 
-// Update hash in manifest
-const code = await readFile(outPath, "utf8");
-manifest.hash = createHash("sha256").update(code).digest("hex");
-await writeFile("./dist/manifest.json", JSON.stringify(manifest, null, 4));
-fs.writeFileSync("dist/_redirects", "/ /index.js 200\n");
-
-console.log("✅ Build complete with hash:", manifest.hash);
+export const onUnload = () => {
+    console.log("🛑 Staff Tags unloaded");
+    unpatch?.();
+};
