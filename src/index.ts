@@ -1,41 +1,23 @@
-const { React } = require("@vendetta/metro/common");
-const { before } = require("@vendetta/patcher");
-const { findByName } = require("@vendetta/metro");
+import { after, unpatchAll } from "@vendetta/patcher";
 
-const UserBadges = findByName("UserBadges", false);
+// Patch modules
+import patchChat from "./patches/chat";
+import patchDetails from "./patches/details";
+import patchName from "./patches/name";
+import patchSidebar from "./patches/sidebar";
 
-let unpatch;
-
-const staffIds = [
-    "288054683161853952", // your user ID
-    // add more IDs here
-];
-
-function isStaff(userId: string): boolean {
-    return staffIds.includes(userId);
-}
+let unpatchers: Array < () => void > = [];
 
 export const onLoad = () => {
-    unpatch = before("default", UserBadges, ([props]) => {
-        const { user, badges } = props;
-        if (!user || !isStaff(user.id)) return;
-        
-        badges.push(
-            React.createElement("span", {
-                style: {
-                    backgroundColor: "#5865F2",
-                    color: "#fff",
-                    padding: "2px 6px",
-                    borderRadius: "4px",
-                    marginLeft: 4,
-                    fontSize: 12,
-                    fontWeight: "bold"
-                }
-            }, "STAFF")
-        );
-    });
+    unpatchers.push(patchChat());
+    unpatchers.push(patchDetails());
+    unpatchers.push(patchName());
+    unpatchers.push(patchSidebar());
+    console.log("✅ Staff Tags with all patches loaded");
 };
 
 export const onUnload = () => {
-    unpatch?.();
+    unpatchers.forEach((u) => u && u());
+    unpatchAll();
+    console.log("🛑 Staff Tags patches unloaded");
 };
