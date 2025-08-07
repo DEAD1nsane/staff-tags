@@ -1,8 +1,0 @@
-{
-  "name": "Staff Tags",
-  "description": "Adds a STAFF badge to selected user IDs.",
-  "authors": ["DEAD1nsane"],
-  "version": "1.0.0",
-  "main": "index.js",
-  "hash": "37bd56021eb4f10dbb5ea3a26387b05c3e9246c4e9bd007be8618fc71702b5a0"
-}
