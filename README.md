@@ -2,7 +2,7 @@
 
 Shows tags for staff members in chat.
 
-<img src="preview.png" width="300">
+<img src="https://raw.githubusercontent.com/boyratata/staff-tags/refs/heads/main/preview.png" width="300">
 
 
 ### Setting Page and Buttons Descriptions and Actions.
